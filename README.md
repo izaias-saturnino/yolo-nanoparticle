@@ -31,6 +31,10 @@ Após isso, deve-se configurar o localização de datasets para a pasta do proje
 
 ## Execução do treinamento
 
-Para executar o código corretamente deve-se modificar as variáveis *data_file*, *local_model_name*, *base_model_name* e *oriented_bb* de acordo com os valores necessários. A variável *data_file* deve possuir o arquivo *.yaml* necessário para que o dataset seja encontrado; a variável *local_model_name* deve possuir o nome do modelo que deve ser treinado; a variável *base_model_name* deve possuir o nome do modelo base, o qual será baixado caso não exista (útil para fazer retreinamento e/ou baixar menos modelos). Finalmente a variável *oriented_bb* deve informar se o modelo treinado será orientado ou não.
+Para executar o código em *yolo_experiment.py* corretamente deve-se modificar as variáveis *data_file*, *local_model_name*, *base_model_name* e *oriented_bb* de acordo com os valores necessários. A variável *data_file* deve possuir o arquivo *.yaml* necessário para que o dataset seja encontrado; a variável *local_model_name* deve possuir o nome do modelo que deve ser treinado; a variável *base_model_name* deve possuir o nome do modelo base, o qual será baixado caso não exista (útil para fazer retreinamento e/ou baixar menos modelos); finalmente, a variável *oriented_bb* deve informar se o modelo treinado será orientado ou não.
 
 Para mais informações, veja a [documentação do YOLOv8](https://docs.ultralytics.com/pt/models/yolov8/).
+
+## Medição das métricas
+
+Para obter as métricas, deve-se executar *test_generated_models.py* com as variáveis com valores corretos. A variável *data_file* deve possuir o arquivo *.yaml* necessário para que o dataset seja encontrado; a variável *model_names* deve conter uma lista com o caminho relativo dos modelos; a variável *confidence* deve conter o valor do limiar de confiança desejado; a variável *metric_sets* deve conter os conjuntos de dados a ser testados; se a opção *save_results* ser ativada, então o script salvará os resultados das predições; *dir-path* deve conter o diretório do conjunto de dados; finalmente, *oriented_bb* deve informar se o modelo a ser testado é orientado ou não.
