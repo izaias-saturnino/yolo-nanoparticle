@@ -12,7 +12,7 @@ Neste projeto, aplicamos o YOLO para detectar nanopartículas em imagens de micr
 - Modelo YOLO pré-treinado e ajustado para detecção de nanopartículas.
 - Script de inferência e benchmarking.
 
-## Execução local
+## Configuração de ambiente
 
 Para executar o código localmente, deve-se instalar o módulo ultralytics em python.
 
@@ -28,3 +28,9 @@ cd yolo-nanoparticle
 ```
 
 Após isso, deve-se configurar o localização de datasets para a pasta do projeto clonado.
+
+## Execução do treinamento
+
+Para executar o código corretamente deve-se modificar as variáveis *data_file*, *local_model_name*, *base_model_name* e *oriented_bb* de acordo com os valores necessários. A variável *data_file* deve possuir o arquivo *.yaml* necessário para que o dataset seja encontrado; a variável *local_model_name* deve possuir o nome do modelo que deve ser treinado; a variável *base_model_name* deve possuir o nome do modelo base, o qual será baixado caso não exista (útil para fazer retreinamento e/ou baixar menos modelos). Finalmente a variável *oriented_bb* deve informar se o modelo treinado será orientado ou não.
+
+Para mais informações, veja a [documentação do YOLOv8](https://docs.ultralytics.com/pt/models/yolov8/).
