@@ -23,7 +23,7 @@ pip install ultralytics
 Clonar esse repositório.
 
 ```bash
-git clone https://github.com/izaias-saturnino/yolo-nanoparticle
+git clone https://github.com/izaias-saturnino/yolo-nanoparticle.git
 cd yolo-nanoparticle
 ```
 
