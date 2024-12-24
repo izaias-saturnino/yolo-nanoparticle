@@ -1,0 +1,8 @@
+# classes
+names:
+  0: 'particle'
+# number of classes
+nc: 1
+train: data_transformed-obb/images/train
+val: data_transformed-obb/images/val
+test: data_transformed-obb/images/test
