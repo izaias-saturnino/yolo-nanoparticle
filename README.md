@@ -1,40 +1,209 @@
-# Detecção de objetos de nanopartículas com YOLO
+# YOLOv8 Nanoparticle Detection (Oriented Bounding Boxes)
 
-Este repositório contém a implementação da detecção de objetos de nanopartículas usando YOLO (You Only Look Once). O objetivo deste projeto é detectar e localizar nanopartículas em imagens de microscopia usando técnicas de aprendizado de máquina.
+This repository implements a full training and benchmarking pipeline for **nanoparticle detection in microscopy images** using YOLOv8.
 
-## Visão geral
+The project focuses on **detecting and measuring nanoparticles**, not only locating them.
+It provides tools to train custom models, evaluate them rigorously, and compare multiple trained checkpoints.
 
-Neste projeto, aplicamos o YOLO para detectar nanopartículas em imagens de microscopia. O projeto visa fornecer um método robusto e eficiente para detecção de nanopartículas.
+Main scripts:
 
-### Principais recursos
+• `yolo_experiment.py` — training pipeline
+• `test_generated_models.py` — inference and benchmarking
 
-- Scripts para tratamento de dados brutos do dataset criado.
-- Modelo YOLO pré-treinado e ajustado para detecção de nanopartículas.
-- Script de inferência e benchmarking.
+---
 
-## Configuração de ambiente
+# Project Goal
 
-Para executar o código localmente, deve-se instalar o módulo ultralytics em python.
+Detect and localize **nanoparticles in microscopy imagery** using deep learning, providing a robust and efficient workflow suitable for experimentation and reproducible research.
+
+The repository includes:
+
+• Scripts for dataset handling and experimentation
+• Fine-tuned YOLO models for nanoparticle detection
+• Automated inference and benchmarking tools
+
+---
+
+# Environment Setup
+
+Python 3.10+ recommended.
+
+Install the main dependency:
 
 ```bash
-pip install ultralytics
+pip install ultralytics opencv-python numpy
 ```
 
-Clonar esse repositório.
+Clone the repository:
 
 ```bash
 git clone https://github.com/izaias-saturnino/yolo-nanoparticle.git
 cd yolo-nanoparticle
 ```
 
-Após isso, deve-se configurar o localização de datasets para a pasta do projeto clonado.
+After cloning, **configure the dataset location inside the project directory**.
 
-## Execução do treinamento
+---
 
-Para executar o código em *yolo_experiment.py* corretamente deve-se modificar as variáveis *data_file*, *local_model_name*, *base_model_name* e *oriented_bb* de acordo com os valores necessários. A variável *data_file* deve possuir o arquivo *.yaml* necessário para que o dataset seja encontrado; a variável *local_model_name* deve possuir o nome do modelo que deve ser treinado; a variável *base_model_name* deve possuir o nome do modelo base, o qual será baixado caso não exista (útil para fazer retreinamento e/ou baixar menos modelos); finalmente, a variável *oriented_bb* deve informar se o modelo treinado será orientado ou não.
+# Dataset Requirements
 
-Para mais informações, veja a [documentação do YOLOv8](https://docs.ultralytics.com/pt/models/yolov8/).
+The scripts expect a YOLO-style dataset configured via a `.yaml` file.
 
-## Medição das métricas
+Example structure:
 
-Para obter as métricas, deve-se executar *test_generated_models.py* com as variáveis com valores corretos. A variável *data_file* deve possuir o arquivo *.yaml* necessário para que o dataset seja encontrado; a variável *model_names* deve conter uma lista com o caminho relativo dos modelos; a variável *confidence* deve conter o valor do limiar de confiança desejado; a variável *metric_sets* deve conter os conjuntos de dados a ser testados; se a opção *save_results* ser ativada, então o script salvará os resultados das predições; *dir-path* deve conter o diretório do conjunto de dados; finalmente, *oriented_bb* deve informar se o modelo a ser testado é orientado ou não.
+```
+data-obb/
+├── images/
+│   ├── train/
+│   ├── val/
+│   └── test/
+└── labels/
+    ├── train/
+    ├── val/
+    └── test/
+```
+
+The dataset configuration file must be referenced by the training script:
+
+```
+data.yaml
+```
+
+When oriented bounding boxes are enabled, the scripts automatically switch to:
+
+```
+data-obb.yaml
+```
+
+---
+
+# Training
+
+Run:
+
+```bash
+python yolo_experiment.py
+```
+
+Before running, **configure the following variables inside the script**:
+
+| Variable           | Description                     |
+| ------------------ | ------------------------------- |
+| `data_file`        | Path to dataset YAML            |
+| `local_model_name` | Name of model to train/save     |
+| `base_model_name`  | Base YOLO model to download/use |
+| `oriented_bb`      | Enable oriented bounding boxes  |
+
+The base model is automatically downloaded if missing, enabling retraining without manual model management.
+
+---
+
+# Multi-Phase Training Strategy
+
+The training pipeline uses staged learning to improve stability and generalization.
+
+Phase 1 — Baseline training
+• No augmentation
+• Learns stable features
+
+Phase 2 — Augmented training
+Adds:
+• Rotation (up to 180° in OBB mode)
+• Copy-paste
+• MixUp
+• Vertical flip
+
+Phase 3 — Shear training (prepared but disabled)
+
+Training artifacts and runs are automatically archived to prevent overwriting.
+
+---
+
+# Custom Geometry-Based Metric
+
+This project introduces a metric focused on **particle diameter accuracy**.
+
+Process:
+
+1. Match predictions to ground truth using IoU
+2. Extract particle diameter from the largest bounding-box edge
+3. Normalize predicted diameter by true diameter
+4. Compute **99% confidence interval of diameter error**
+
+Lower values indicate more reliable particle measurement.
+
+Training metrics are saved to:
+
+```
+training_phase_1.txt
+training_phase_2.txt
+```
+
+---
+
+# Model Evaluation / Benchmarking
+
+Run:
+
+```bash
+python test_generated_models.py
+```
+
+Before running, configure:
+
+| Variable       | Description                         |
+| -------------- | ----------------------------------- |
+| `data_file`    | Dataset YAML                        |
+| `model_paths`  | List of trained models              |
+| `confidence`   | Detection confidence threshold      |
+| `metric_sets`  | Splits to evaluate (train/val/test) |
+| `save_results` | Save prediction outputs             |
+| `dir_path`     | Dataset directory                   |
+| `oriented_bb`  | Whether models use OBB              |
+
+---
+
+# Metrics Produced
+
+For each model and dataset split:
+
+• Mean diameter error
+• 99% CI of diameter error
+• Precision
+• Recall
+• F1 score
+• True positives
+• False positives
+• False negatives
+• Instance counts
+
+YOLO run folders are automatically archived for reproducibility.
+
+---
+
+# Typical Workflow
+
+Train models:
+
+```bash
+python yolo_experiment.py
+```
+
+Benchmark models:
+
+```bash
+python test_generated_models.py
+```
+
+Compare metrics and select the best checkpoint.
+
+---
+
+# References
+
+YOLOv8 documentation:
+[https://docs.ultralytics.com/models/yolov8/](https://docs.ultralytics.com/models/yolov8/)
+
+---
+
+If you want, I can now produce a short GitHub-portfolio version or an academic paper style version.
