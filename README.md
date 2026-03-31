@@ -203,7 +203,3 @@ Compare metrics and select the best checkpoint.
 
 YOLOv8 documentation:
 [https://docs.ultralytics.com/models/yolov8/](https://docs.ultralytics.com/models/yolov8/)
-
----
-
-If you want, I can now produce a short GitHub-portfolio version or an academic paper style version.
